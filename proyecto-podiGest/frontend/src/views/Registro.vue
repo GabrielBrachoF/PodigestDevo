@@ -1,112 +1,124 @@
 <template>
-  <div class="register-container">
-    <div class="register-box">
-      <h2>Crear Cuenta</h2>
+  <div class="register-container flex items-center justify-center min-h-screen w-250 bg-blue-300/50 rounded-lg">
+    <div class="register-box bg-white p-8 rounded-xl shadow-md w-full max-w-xl">
+      <h2 class="text-2xl font-semibold text-center text-gray-800 border-b border-blue-600 pb-2 mb-6">
+        Crear Cuenta
+      </h2>
 
       <!-- Muestra mensajes de éxito o error -->
-      <div v-if="errorMessage" class="message error-message">{{ errorMessage }}</div>
-      <div v-if="successMessage" class="message success-message">{{ successMessage }}</div>
+      <div v-if="errorMessage" class="message error-message text-red-600 bg-red-100 border border-red-400 rounded-md p-3 text-center mb-4">
+        {{ errorMessage }}
+      </div>
+      <div v-if="successMessage" class="message success-message text-green-700 bg-green-100 border border-green-400 rounded-md p-3 text-center mb-4">
+        {{ successMessage }}
+      </div>
 
-      <form @submit.prevent="handleRegister">
-
+      <form @submit.prevent="handleRegister" class="space-y-5 text-black">
         <!-- Campo: Nombre -->
         <div class="input-group">
-          <label for="nombre">👤 Nombre</label>
+          <label for="nombre" class="block mb-1 font-medium text-gray-700">👤 Nombre</label>
           <input
-              type="text"
-              id="nombre"
-              v-model="registration.nombre"
-              required
-              placeholder="Tu nombre"
+            type="text"
+            id="nombre"
+            v-model="registration.nombre"
+            required
+            placeholder="Tu nombre"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
         <!-- Campo: Apellido -->
         <div class="input-group">
-          <label for="apellido">👥 Apellido</label>
+          <label for="apellido" class="block mb-1 font-medium text-gray-700">👥 Apellido</label>
           <input
-              type="text"
-              id="apellido"
-              v-model="registration.apellido"
-              required
-              placeholder="Tu apellido"
+            type="text"
+            id="apellido"
+            v-model="registration.apellido"
+            required
+            placeholder="Tu apellido"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
         <!-- Campo: Cédula -->
         <div class="input-group">
-          <label for="cedula">💳 Cédula/ID</label>
+          <label for="cedula" class="block mb-1 font-medium text-gray-700">💳 Cédula/ID</label>
           <input
-              type="text"
-              id="cedula"
-              v-model="registration.cedula"
-              required
-              placeholder="Ej: V-12345678"
+            type="text"
+            id="cedula"
+            v-model="registration.cedula"
+            required
+            placeholder="Ej: V-12345678"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
         <!-- Campo: Correo Electrónico -->
         <div class="input-group">
-          <label for="email">📧 Correo Electrónico</label>
+          <label for="email" class="block mb-1 font-medium text-gray-700">📧 Correo Electrónico</label>
           <input
-              type="email"
-              id="email"
-              v-model="registration.correoElectronico"
-              required
-              placeholder="ejemplo@gmail.com"
+            type="email"
+            id="email"
+            v-model="registration.correoElectronico"
+            required
+            placeholder="ejemplo@gmail.com"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
-        <!-- Campo: Contraseña (Nota: Mapea a 'contrasenia' en el backend) -->
+        <!-- Campo: Contraseña -->
         <div class="input-group">
-          <label for="password">🔒 Contraseña</label>
+          <label for="password" class="block mb-1 font-medium text-gray-700">🔒 Contraseña</label>
           <input
-              type="password"
-              id="password"
-              v-model="registration.contrasenia"
-              required
-              placeholder="••••••••"
+            type="password"
+            id="password"
+            v-model="registration.contrasenia"
+            required
+            placeholder="••••••••"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
         <!-- Campo: Fecha de Nacimiento -->
         <div class="input-group">
-          <label for="fechaNacimiento">🎂 Fecha de Nacimiento</label>
+          <label for="fechaNacimiento" class="block mb-1 font-medium text-gray-700">🎂 Fecha de Nacimiento</label>
           <input
-              type="date"
-              id="fechaNacimiento"
-              v-model="registration.fechaNacimiento"
-              required
+            type="date"
+            id="fechaNacimiento"
+            v-model="registration.fechaNacimiento"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
           />
         </div>
 
         <!-- Campo: Selección de Rol -->
         <div class="input-group role-group">
-          <label>Tipo de Usuario</label>
-          <div class="role-options">
-            <input type="radio" id="paciente" value="paciente" v-model="registration.rol" required>
-            <label for="paciente">Paciente</label>
-
-            <input type="radio" id="especialista" value="especialista" v-model="registration.rol" required>
-            <label for="especialista">Especialista</label>
+          <label class="block mb-1 font-medium text-gray-700">Tipo de Usuario</label>
+          <div class="role-options flex gap-6">
+            <div class="flex items-center gap-2">
+              <input type="radio" id="paciente" value="paciente" v-model="registration.rol" required />
+              <label for="paciente" class="text-gray-700">Paciente</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <input type="radio" id="especialista" value="especialista" v-model="registration.rol" required />
+              <label for="especialista" class="text-gray-700">Especialista</label>
+            </div>
           </div>
         </div>
 
-        <button type="submit" class="register-button-submit">
+        <button type="submit" class="register-button-submit w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-lg">
           Registrarse
         </button>
       </form>
 
-      <div class="separator"></div>
+      <div class="separator my-6 border-t border-gray-200"></div>
 
-      <p class="login-text">
+      <p class="login-text text-center text-sm text-gray-600">
         ¿Ya tienes cuenta?
-        <!-- Enlace para volver al Login -->
-        <router-link to="/login" class="login-link">
+        <router-link to="/login" class="login-link text-blue-600 underline hover:text-blue-700">
           Inicia Sesión aquí
         </router-link>
       </p>
-
     </div>
   </div>
 </template>
@@ -176,153 +188,3 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Estilos generales del contenedor (similares a Login.vue) */
-.register-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #f0f2f5;
-}
-
-.register-box {
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 450px; /* Un poco más ancho para tantos campos */
-}
-
-h2 {
-  text-align: center;
-  color: #333;
-  margin-bottom: 30px;
-  border-bottom: 2px solid #AA6C39;
-  padding-bottom: 10px;
-}
-
-/* Estilos de inputs y labels */
-.input-group {
-  margin-bottom: 18px;
-}
-
-label {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
-  color: #555;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="date"] {
-  width: 95%;
-  padding: 12px 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  box-sizing: border-box;
-  font-size: 16px;
-  transition: border-color 0.3s;
-}
-
-input:focus {
-  border-color: #AA6C39;
-  outline: none;
-}
-
-/* Estilos de mensajes */
-.message {
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  text-align: center;
-  font-weight: bold;
-}
-
-.error-message {
-  background-color: #fdd;
-  color: #d32f2f;
-  border: 1px solid #d32f2f;
-}
-
-.success-message {
-  background-color: #dfd;
-  color: #388e3c;
-  border: 1px solid #388e3c;
-}
-
-/* Estilos específicos para la selección de rol */
-.role-group {
-  border: 1px solid #ddd;
-  padding: 15px;
-  border-radius: 6px;
-}
-
-.role-options {
-  display: flex;
-  gap: 20px;
-  margin-top: 10px;
-}
-
-.role-options label {
-  font-weight: normal;
-  color: #333;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.role-options input[type="radio"] {
-  width: auto;
-  margin-right: 5px;
-}
-
-
-/* Estilos del botón de Registro */
-.register-button-submit {
-  width: 100%;
-  padding: 12px;
-  background-color: #AA6C39;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 18px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 10px;
-}
-
-.register-button-submit:hover {
-  background-color: #8C592C;
-}
-
-/* Estilos de la sección de Login */
-.separator {
-  margin: 25px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.login-text {
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-}
-
-.login-link {
-  background: none;
-  border: none;
-  color: #F0E68C; /* Color dorado claro (Goldenrod) */
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0;
-  display: inline;
-  font-size: 14px;
-}
-
-.login-link:hover {
-  color: #AA6C39;
-}
-</style>
