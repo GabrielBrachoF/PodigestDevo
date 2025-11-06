@@ -12,29 +12,28 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UsuarioService {
+public class CrearUsuarioService {
 
     private List<Usuario> listaUsuarios;
-    private List<Usuario> listaEspecialistas;
-
     private static final String USUARIOS_JSON_FILE = "usuarios.json";
-    private static final String ESPECIALISTAS_JSON_FILE = "especialistas.json";
-
     private final ObjectMapper mapper;
 
-    public UsuarioService() {
+    public CrearUsuarioService() {
         this.mapper = new ObjectMapper();
         this.mapper.registerModule(new JavaTimeModule());
 
         this.listaUsuarios = cargarUsuariosDesdeJson(USUARIOS_JSON_FILE);
-        this.listaEspecialistas = cargarUsuariosDesdeJson(ESPECIALISTAS_JSON_FILE);
+
     }
 
+    //metodo para sbaer cuales son los usuarios registrados en el JSON
     private List<Usuario> cargarUsuariosDesdeJson(String fileName) {
         Path path = resolveWritablePath(fileName);
         try {
@@ -63,6 +62,7 @@ public class UsuarioService {
         }
     }
 
+    //metodo para escribir el JSON y guardar el nuevo usuario
     private void guardarUsuariosAJson(List<Usuario> usuarios, String fileName) throws IOException {
         Path path = resolveWritablePath(fileName);
         if (path.getParent() != null) {
@@ -84,29 +84,32 @@ public class UsuarioService {
     }
 
 
+    // metodo para verificar si el usuario ya existe
     public boolean existeUsuario(String correo, String cedula) {
         return listaUsuarios.stream()
                 .anyMatch(u -> u.getCorreoElectronico() != null && u.getCorreoElectronico().equalsIgnoreCase(correo) ||
                         u.getCedula() != null && u.getCedula().equalsIgnoreCase(cedula));
     }
 
-    public Usuario guardarUsuario(Usuario nuevoUsuario) throws IOException {
+    //metodo para verificar si el usuario es o no mayor de edad
+    public boolean esMayorDeEdad(LocalDate fechaNacimiento) {
+        if (fechaNacimiento == null) {
+            return false;
+        }
+        return Period.between(fechaNacimiento, LocalDate.now()).getYears() >= 18;
+    }
 
+    // metodo guarda en el archivo JSON
+    public Usuario guardarUsuario(Usuario nuevoUsuario) throws IOException {
+        if (!esMayorDeEdad(nuevoUsuario.getFechaNacimiento())) {
+
+            throw new IllegalArgumentException("El usuario debe ser mayor de edad (18 años) para registrarse.");
+        }
         listaUsuarios.add(nuevoUsuario);
         guardarUsuariosAJson(listaUsuarios, USUARIOS_JSON_FILE);
 
-        if ("especialista".equalsIgnoreCase(nuevoUsuario.getRol())) {
-            listaEspecialistas.add(nuevoUsuario);
-            guardarUsuariosAJson(listaEspecialistas, ESPECIALISTAS_JSON_FILE);
-        }
-
         return nuevoUsuario;
     }
-
-
-    // =========================================================
-    // LÓGICA DE LOGIN
-    // =========================================================
 
     public Optional<Usuario> validarUsuarioExiste(String correo, String contrasena) {
         Optional<Usuario> usuarioEncontrado = listaUsuarios.stream()
@@ -120,7 +123,6 @@ public class UsuarioService {
                 return Optional.of(usuario);
             }
         }
-
         return Optional.empty();
     }
 }
