@@ -23,26 +23,32 @@ import java.util.stream.Collectors;
 public class CitaService {
 
     private List<Cita> listaCitas;
-    private static final String CITAS_JSON_FILE = "citas.json";
+    private static final String CITAS_JSON_FILE = "cita.json";
     private final ObjectMapper mapper;
 
     // --- Lógica de Carga/Guardado (Adaptada de CrearUsuarioService) ---
 
     public CitaService() {
         this.mapper = new ObjectMapper();
-        this.mapper.registerModule(new JavaTimeModule()); // ¡Importante para LocalDateTime!
+        this.mapper.registerModule(new JavaTimeModule());
         this.listaCitas = cargarCitasDesdeJson(CITAS_JSON_FILE);
+        System.out.println("CitaService inicializado. Citas cargadas: " + listaCitas.size());
     }
 
     private List<Cita> cargarCitasDesdeJson(String fileName) {
         Path path = resolveWritablePath(fileName);
+        System.out.println("Intentando cargar citas desde: " + path.toAbsolutePath());
         try {
             if (Files.exists(path) && Files.size(path) > 0) {
+                System.out.println("Archivo encontrado. Leyendo...");
                 return mapper.readValue(path.toFile(), new TypeReference<List<Cita>>() {
                 });
+            } else {
+                System.out.println("Archivo no existe o está vacío.");
             }
         } catch (IOException e) {
             System.err.println("ERROR: No se pudo leer el archivo JSON en: " + path);
+            e.printStackTrace();
         }
         List<Cita> citas = cargarDesdeClasspath(fileName);
         if (!citas.isEmpty()) {
@@ -50,6 +56,7 @@ public class CitaService {
                 guardarCitasAJson(citas, fileName);
             } catch (IOException e) {
                 System.err.println("ERROR: No se pudo inicializar el archivo JSON en: " + path);
+                e.printStackTrace();
             }
         }
         return citas;
@@ -70,6 +77,7 @@ public class CitaService {
             Files.createDirectories(path.getParent());
         }
         mapper.writerWithDefaultPrettyPrinter().writeValue(path.toFile(), citas);
+        System.out.println("Citas guardadas en: " + path.toAbsolutePath());
     }
 
     private Path resolveWritablePath(String fileName) {
@@ -139,6 +147,7 @@ public class CitaService {
     }
 
     public Cita agendarCita(String pacienteCedula, String especialistaCedula, java.time.LocalDateTime fechaHoraInicio, String descripcion) throws IOException {
+        System.out.println("Agendando cita para: " + pacienteCedula + " con " + especialistaCedula + " en " + fechaHoraInicio);
         Cita nuevaCita = new Cita(
                 UUID.randomUUID().toString(),
                 pacienteCedula,
@@ -146,7 +155,9 @@ public class CitaService {
                 fechaHoraInicio,
                 descripcion
         );
+        System.out.println("Nueva cita creada con ID: " + nuevaCita.getId());
         listaCitas.add(nuevaCita);
+        System.out.println("Total de citas en memoria: " + listaCitas.size());
         guardarCitasAJson(listaCitas, CITAS_JSON_FILE);
         return nuevaCita;
     }

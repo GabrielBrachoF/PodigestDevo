@@ -53,8 +53,18 @@ public class CitaController {
      * }
      */
     @PostMapping
-    public ResponseEntity<Cita> agendarCita(@RequestBody CitaRequest request) {
+    public ResponseEntity<?> agendarCita(@RequestBody CitaRequest request) {
         try {
+            if (request.getPacienteCedula() == null || request.getPacienteCedula().isEmpty()) {
+                return ResponseEntity.badRequest().body("La cédula del paciente es requerida");
+            }
+            if (request.getEspecialistaCedula() == null || request.getEspecialistaCedula().isEmpty()) {
+                return ResponseEntity.badRequest().body("La cédula del especialista es requerida");
+            }
+            if (request.getFechaHoraInicio() == null || request.getFechaHoraInicio().isEmpty()) {
+                return ResponseEntity.badRequest().body("La fecha y hora es requerida");
+            }
+
             LocalDateTime fechaHora = LocalDateTime.parse(request.getFechaHoraInicio());
             Cita citaCreada = citaService.agendarCita(
                     request.getPacienteCedula(),
@@ -64,7 +74,9 @@ public class CitaController {
             );
             return ResponseEntity.ok(citaCreada);
         } catch (IOException e) {
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(500).body("Error al guardar la cita: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body("Error: " + e.getMessage());
         }
     }
 
